@@ -1,0 +1,52 @@
+'Skeleton batch process script MATLAB Export
+
+FindData%();                                        'Use function to do the work
+halt;
+
+Func FindData%();
+Var num%;                                           'Variable for number of found files
+Var err%;                                           'Error 
+Var nme$;                                           'Dummy variable for filelist command
+
+err%:=FilePathSet("",0,"Folder to process");        'Select the folder to use
+if err%<0 then                                      'If folder is cancelled or bad soemhow
+    Message("Folder selection failed");             'Give a message
+    Halt                                            'Quit the script
+endif                                              
+
+nme$:="";
+num%:=Filelist(nme$,0);                             'Get the number of files in the folder
+if Num%<=0 then                                     'If no files exist.....
+    Message("No data files to process");
+    return 0;
+endif;
+
+var name$[num%];                                    'Set size of array to hold data file names
+Filelist(name$[], 0);                               'Get the names into the array
+ProcessData%(name$[], num%);                        'Jump to the process fucntion and pass the names and number of files
+return 1
+end
+
+Func ProcessData%(Name$[], num%);
+var i%;                                             'Counter
+var ViewNum%;                                       'Name of the current view
+var Outname$;
+var txt%;
+
+for i%:= 0 to num%-1 do                             'Step round the names 
+    viewNum%:=Fileopen(Name$[i%],0);                'Open the file
+	FrontView(ViewNum%);
+	OutName$:=DelStr$(Name$[i%],Len(Name$[i%])-2,3);
+	OutName$:=Outname$+"mat";
+	'ExportRectFormat(freq, 2);
+	'Message(Maxtime());
+    ExportChanList(0);
+    ExportChanList(0,MaxTime(),-1);	
+	Txt%:=FileSaveAs(Outname$,100,0,"",0,"UseSName=0|UseCName=1|WaveTimes=1|BinFreq=0|BinTimes=0|WaveData=2|MarkAs=1|TMarkAs=2|RMarkAs=2|RMarkData=2|WaveMarkAs=2|WaveMarkData=2|Compatability=0"); 'Export with string parameters
+    FrontView(viewnum%);
+
+    Printlog("Processed %s\n",name$[i%]);           'Print the name of the processed file 
+	Fileclose(); 	                                'Close the file and go to the next
+next
+return 1
+end
