@@ -1,1 +1,1 @@
-# Spike2_batch_export_to_Matab
+# Batch export Spike2 data to Matlab
